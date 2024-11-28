@@ -28,6 +28,8 @@ public class CustomReport {
 
             JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
 
+            JRBeanCollectionDataSource chartDataSource = new JRBeanCollectionDataSource(list);
+
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("studentName", "John");
             parameters.put("tableData", dataSource);
@@ -36,7 +38,7 @@ public class CustomReport {
 
             JasperReport report = JasperCompileManager.compileReport(filePath);
 
-            JasperPrint print = JasperFillManager.fillReport(report, parameters, new JREmptyDataSource());
+            JasperPrint print = JasperFillManager.fillReport(report, parameters, chartDataSource);
 
             JasperExportManager.exportReportToPdfFile(print, "D:\\java_app\\CustomReport.pdf");
 
