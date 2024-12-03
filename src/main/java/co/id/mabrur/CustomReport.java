@@ -2,7 +2,13 @@ package co.id.mabrur;
 
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.JRXlsExporter;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +39,9 @@ public class CustomReport {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("studentName", "John");
             parameters.put("tableData", dataSource);
-
+            parameters.put("subReport", getSubReport());
+            parameters.put("subDataSource", getSubDataSource());
+            parameters.put("subParameters", getParameters());
 
 
             JasperReport report = JasperCompileManager.compileReport(filePath);
@@ -42,8 +50,47 @@ public class CustomReport {
 
             JasperExportManager.exportReportToPdfFile(print, "D:\\java_app\\CustomReport.pdf");
 
+            JasperExportManager.exportReportToHtmlFile(print, "D:\\java_app\\CustomReport.html");
+
+            JRXlsxExporter exporter = new JRXlsxExporter();
+            exporter.setExporterInput(new SimpleExporterInput(print));
+            exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(
+                    new FileOutputStream(new File("D:\\java_app\\CustomReport.xlsx"))
+            ));
+
+            exporter.exportReport();
         }catch (Exception e){
             System.out.println(e.getMessage());
         }
+    }
+
+    public static JasperReport getSubReport(){
+        String filePath ="D:\\java_app\\jasperdemo\\src\\main\\resources\\SimpleReport.jrxml";
+
+
+        try {
+            return JasperCompileManager.compileReport(filePath);
+        } catch (JRException e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public static JRBeanCollectionDataSource getSubDataSource(){
+        Student student1 = new Student(1L, "Roni", "Din", "Fatahillah Street", "Cirebon");
+        Student student2 = new Student(2L, "Suki", "Puki", "Dewi Sartike Street", "Tegal");
+        List<Student> list = new ArrayList<>();
+        list.add(student1);
+        list.add(student2);
+
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(list);
+
+        return dataSource;
+    }
+
+    public static Map<String, Object> getParameters(){
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("studentName", "John");
+        return parameters;
     }
 }
